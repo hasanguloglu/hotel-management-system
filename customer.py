@@ -135,13 +135,13 @@ class Custom_Window:
         button_add = Button(button_frame, text="Add", command=self.add_data, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_add.grid(row=0, column=0,)
 
-        button_update = Button(button_frame, text="Update", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
+        button_update = Button(button_frame, text="Update", command=self.update, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_update.grid(row=0, column=1, padx=1)
 
-        button_delete = Button(button_frame, text="Delete", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
+        button_delete = Button(button_frame, text="Delete", command=self.mDelete, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_delete.grid(row=0, column=2, padx=1)
 
-        button_reset = Button(button_frame, text="Reset", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
+        button_reset = Button(button_frame, text="Reset", command=self.reset, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_reset.grid(row=0, column=3, padx=1)
 
         # =================== table frame ===================
@@ -150,18 +150,21 @@ class Custom_Window:
 
         searchby = Label(table_frame, text="Search By", font=("TkDefaultFont", 10, "bold"), bg="red", fg="white")
         searchby.grid(row=0, column=0, sticky=W, padx=2)
-        combo_id_search = ttk.Combobox(table_frame, font=("TkDefaultFont", 10, "bold"), width=14, state="readonly")
+
+        self.search_var = StringVar()
+        combo_id_search = ttk.Combobox(table_frame, textvariable=self.search_var, font=("TkDefaultFont", 10, "bold"), width=14, state="readonly")
         combo_id_search["value"] = ("Mobile", "Ref",)
         combo_id_search.current(0)
         combo_id_search.grid(row=0, column=1, padx=2)
 
-        search = ttk.Entry(table_frame, width=14, font=("TkDefaultFont", 10, "bold"))
+        self.txt_search = StringVar()
+        search = ttk.Entry(table_frame, textvariable=self.txt_search, width=14, font=("TkDefaultFont", 10, "bold"))
         search.grid(row=0, column=2, padx=2)
 
-        button_search = Button(table_frame, text="Search", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=7)
+        button_search = Button(table_frame, text="Search", command= self.search, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=7)
         button_search.grid(row=0, column=3, padx=2)
 
-        button_showall = Button(table_frame, text="Show All", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=7)
+        button_showall = Button(table_frame, text="Show All", command= self.fetch_data, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=7)
         button_showall.grid(row=0, column=4, padx=2)
 
         # =================== show data table ===================
@@ -206,6 +209,8 @@ class Custom_Window:
         self.customer_details_table.column("Address", width=100)
 
         self.customer_details_table.pack(fill=BOTH, expand=1)
+        self.customer_details_table.bind("<ButtonRelease-1>", self.get_cursor)
+        self.fetch_data()
     
 
     def add_data(self):
@@ -230,12 +235,115 @@ class Custom_Window:
                                 self.variable_address.get(),
                                 ))
                 conn.commit()
+                self.fetch_data()
                 conn.close()
                 messagebox.showinfo("Success", "Customer has been added", parent=self.root)
             except Exception as es:
                 messagebox.showwarning("Warning", f"Some thing went wrong: {str(es)}", parent=self.root)
+    
+    
+    def fetch_data(self):
+        conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+        my_cursor = conn.cursor()
+        my_cursor.execute("Select * from customer")
+        rows = my_cursor.fetchall()
+        if len(rows) != 0:
+            self.customer_details_table.delete(*self.customer_details_table.get_children())
+            for item in rows:
+                self.customer_details_table.insert("", END, values= item)
+            conn.commit()
+        conn.close()
+
+    
+    def get_cursor(self, event=""):
+        cursor_row = self.customer_details_table.focus()
+        content = self.customer_details_table.item(cursor_row)
+        row = content['values']
+
+        self.variable_ref.set(row[0]),
+        self.variable_customer_name.set(row[1]),
+        self.variable_mother_name.set(row[2]),
+        self.variable_gender.set(row[3]),
+        self.variable_postcode.set(row[4]),
+        self.variable_mobile.set(row[5]),
+        self.variable_email.set(row[6]),
+        self.variable_nationality.set(row[7]),
+        self.variable_idproof.set(row[8]),
+        self.variable_idnumber.set(row[9]),
+        self.variable_address.set(row[10])
+    
+
+    def update(self):
+        if self.variable_mobile.get() == "":
+            messagebox.showerror("Error", "Please enter mobile number", parent = self.root)
+        else:
+            conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+            my_cursor = conn.cursor()
+            my_cursor.execute("UPDATE customer SET Name =%s, Mother =%s, Gender =%s, Postcode=%s, Mobile =%s, Email =%s, Nationality =%s, IdProof =%s, IdNumber=%s, Address =%s WHERE Ref=%s",
+                              (
+                                self.variable_customer_name.get(),
+                                self.variable_mother_name.get(),
+                                self.variable_gender.get(),
+                                self.variable_postcode.get(),
+                                self.variable_mobile.get(),
+                                self.variable_email.get(),
+                                self.variable_nationality.get(),
+                                self.variable_idproof.get(),
+                                self.variable_idnumber.get(),
+                                self.variable_address.get(),
+                                self.variable_ref.get(),
+                                ))
+            conn.commit()
+            self.fetch_data()
+            conn.close()
+            messagebox.showinfo("Update", "Customer details has been updated successfully", parent=self.root)
+    
+
+    def mDelete(self):
+        mDelete = messagebox.askyesno("Hotel Management System", "Do you want to delete this customer", parent=self.root)
+        if mDelete > 0:
+            conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+            my_cursor = conn.cursor()
+            query = "DELETE FROM customer WHERE Ref =%s"
+            value = (self.variable_ref.get(),)
+            my_cursor.execute(query, value)
+        else:
+            if not mDelete:
+                return
+        conn.commit()
+        self.fetch_data()
+        conn.close()
+
+    
+    def reset(self):
+        # self.variable_ref.set(""),
+        self.variable_customer_name.set(""),
+        self.variable_mother_name.set(""),
+        # self.variable_gender.set(""),
+        self.variable_postcode.set(""),
+        self.variable_mobile.set(""),
+        self.variable_email.set(""),
+        # self.variable_nationality.set(""),
+        # self.variable_idproof.set(""),
+        self.variable_idnumber.set(""),
+        self.variable_address.set("")
+
+        x = random.randint(1000, 9999)
+        self.variable_ref.set(str(x))
 
 
+    def search(self):
+        conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+        my_cursor = conn.cursor()
+
+        my_cursor.execute("SELECT * FROM customer WHERE " + str(self.search_var.get()) + " LIKE '%" + str(self.txt_search.get()) + "%'")
+        rows = my_cursor.fetchall()
+        if len(rows) != 0:
+            self.customer_details_table.delete(*self.customer_details_table.get_children())
+            for item in rows:
+                self.customer_details_table.insert("", END, values= item)
+            conn.commit()
+        conn.close()    
 
 
 if __name__ == "__main__":
