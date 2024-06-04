@@ -1,6 +1,7 @@
 from tkinter import *
 from PIL import Image, ImageTk 
 from customer import Custom_Window
+from room import Roombooking
 
 class HotelManagementSystem:
     def __init__(self, root):
@@ -42,7 +43,7 @@ class HotelManagementSystem:
         customer_btn = Button(button_frame, text="CUSTOMER", command=self.custom_details, justify="center", width=20, font=("TkDefaultFont", 14, "bold"), bg= "dark blue", fg="white", bd=0, cursor="hand2")
         customer_btn.grid(row=0, column=0, pady=1)
 
-        room_btn = Button(button_frame, text="ROOM", justify="center", width=20, font=("TkDefaultFont", 14, "bold"), bg= "dark blue", fg="white", bd=0, cursor="hand2")
+        room_btn = Button(button_frame, text="ROOM", command=self.roombooking, justify="center", width=20, font=("TkDefaultFont", 14, "bold"), bg= "dark blue", fg="white", bd=0, cursor="hand2")
         room_btn.grid(row=1, column=0, pady=1)
 
         details_btn = Button(button_frame, text="DETAILS", justify="center", width=20, font=("TkDefaultFont", 14, "bold"), bg= "dark blue", fg="white", bd=0, cursor="hand2")
@@ -58,6 +59,10 @@ class HotelManagementSystem:
     def custom_details(self):
         self.new_window = Toplevel(self.root)
         self.app = Custom_Window(self.new_window)
+
+    def roombooking(self):
+        self.new_window = Toplevel(self.root)
+        self.app = Roombooking(self.new_window)
 
 
 if __name__ == "__main__":
