@@ -3,6 +3,8 @@ from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import mysql.connector
 import random
+from time import strftime
+from datetime import datetime
 
 class Roombooking:
     def __init__(self, root):
@@ -120,23 +122,23 @@ class Roombooking:
         total_cost.grid(row=9, column=1)
 
         # =================== Bill buttons ===================
-        button_bill = Button(label_frame_left, text="Bill", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
+        button_bill = Button(label_frame_left, text="Bill", command=self.total, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_bill.grid(row=10, column=0, padx=1, sticky=W)
 
         # =================== buttons ===================
         button_frame = Frame(label_frame_left, bd=2, relief=RIDGE,)
         button_frame.place(x=0, y=370)
 
-        button_add = Button(button_frame, text="Add", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
+        button_add = Button(button_frame, text="Add", command=self.add_data, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_add.grid(row=0, column=0,)
 
-        button_update = Button(button_frame, text="Update", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
+        button_update = Button(button_frame, text="Update", command=self.update, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_update.grid(row=0, column=1, padx=1)
 
-        button_delete = Button(button_frame, text="Delete", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
+        button_delete = Button(button_frame, text="Delete", command=self.mDelete, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_delete.grid(row=0, column=2, padx=1)
 
-        button_reset = Button(button_frame, text="Reset", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
+        button_reset = Button(button_frame, text="Reset", command=self.reset, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=6)
         button_reset.grid(row=0, column=3, padx=1)
 
         # =================== rightside image ===================
@@ -156,7 +158,7 @@ class Roombooking:
 
         self.search_var = StringVar()
         combo_id_search = ttk.Combobox(table_frame, textvariable=self.search_var, font=("TkDefaultFont", 10, "bold"), width=14, state="readonly")
-        combo_id_search["value"] = ("Contact", "Room",)
+        combo_id_search["value"] = ("Contact", "Roomavailable",)
         combo_id_search.current(0)
         combo_id_search.grid(row=0, column=1, padx=2)
 
@@ -164,10 +166,10 @@ class Roombooking:
         search = ttk.Entry(table_frame, textvariable=self.txt_search, width=14, font=("TkDefaultFont", 10, "bold"))
         search.grid(row=0, column=2, padx=2)
 
-        button_search = Button(table_frame, text="Search", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=7)
+        button_search = Button(table_frame, text="Search", command= self.search, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=7)
         button_search.grid(row=0, column=3, padx=2)
 
-        button_showall = Button(table_frame, text="Show All", font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=7)
+        button_showall = Button(table_frame, text="Show All", command= self.fetch_data, font=("TkDefaultFont", 10, "bold"), bg= "dark blue", fg="white", width=7)
         button_showall.grid(row=0, column=4, padx=2)
 
         # =================== show data table ===================
@@ -202,7 +204,111 @@ class Roombooking:
         self.room_table.column("Meal", width=100)
         self.room_table.column("Noofdays", width=100)
         self.room_table.pack(fill=BOTH, expand=1)
+        
+        self.room_table.bind("<ButtonRelease-1>", self.get_cursor)
+        self.fetch_data()
 
+    def add_data(self):
+        if self.var_Contact.get()== "" or self.var_Checkin.get()== "":
+            messagebox.showerror("Error", "All fields are required", parent=self.root)
+        else:
+            try:
+                conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+                my_cursor = conn.cursor()
+                my_cursor.execute("insert into room values (%s, %s, %s, %s, %s, %s, %s)", (
+                                self.var_Contact.get(),
+                                self.var_Checkin.get(),
+                                self.var_Checkout.get(),
+                                self.var_Roomtype.get(),
+                                self.var_Roomavailable.get(),
+                                self.var_Meal.get(),
+                                self.var_Noofdays.get()
+                               ))
+                conn.commit()
+                self.fetch_data()
+                conn.close()
+                messagebox.showinfo("Success", "Room is booked", parent=self.root)
+            except Exception as es:
+                messagebox.showwarning("Warning", f"Some thing went wrong: {str(es)}", parent=self.root)
+
+    def fetch_data(self):
+        conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+        my_cursor = conn.cursor()
+        my_cursor.execute("Select * from room")
+        rows = my_cursor.fetchall()
+        if len(rows) != 0:
+            self.room_table.delete(*self.room_table.get_children())
+            for item in rows:
+                self.room_table.insert("", END, values= item)
+            conn.commit()
+        conn.close()
+
+    
+    def get_cursor(self, event=""):
+        cursor_row = self.room_table.focus()
+        content = self.room_table.item(cursor_row)
+        row = content['values']
+
+        self.var_Contact.set(row[0]),
+        self.var_Checkin.set(row[1]),
+        self.var_Checkout.set(row[2]),
+        self.var_Roomtype.set(row[3]),
+        self.var_Roomavailable.set(row[4]),
+        self.var_Meal.set(row[5]),
+        self.var_Noofdays.set(row[6]),
+    
+    def update(self):
+        if self.var_Contact.get() == "":
+            messagebox.showerror("Error", "Please enter mobile number", parent = self.root)
+        else:
+            conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+            my_cursor = conn.cursor()
+            my_cursor.execute("UPDATE room SET Checkin =%s, Checkout =%s, Roomtype=%s, Roomavailable =%s, Meal =%s, Noofdays =%s WHERE Contact=%s",
+                              (
+                                self.var_Checkin.get(),
+                                self.var_Checkout.get(),
+                                self.var_Roomtype.get(),
+                                self.var_Roomavailable.get(),
+                                self.var_Meal.get(),
+                                self.var_Noofdays.get(),
+                                self.var_Contact.get(),
+                                ))
+            conn.commit()
+            self.fetch_data()
+            conn.close()
+            messagebox.showinfo("Update", "Room details has been updated successfully", parent=self.root)
+
+    
+    def mDelete(self):
+        mDelete = messagebox.askyesno("Hotel Management System", "Do you want to delete this customer", parent=self.root)
+        if mDelete > 0:
+            conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+            my_cursor = conn.cursor()
+            query = "DELETE FROM room WHERE Contact =%s"
+            value = (self.var_Contact.get(),)
+            my_cursor.execute(query, value)
+        else:
+            if not mDelete:
+                return
+        conn.commit()
+        self.fetch_data()
+        conn.close()
+
+    
+    def reset(self):
+        self.var_Contact.set(""),
+        self.var_Checkin.set(""),
+        self.var_Checkout.set(""),
+        self.var_Roomtype.set(""),
+        self.var_Roomavailable.set(""),
+        self.var_Meal.set(""),
+        self.var_Noofdays.set(""),
+        self.var_paidtax.set(""),
+        self.var_subtotal.set(""),
+        self.var_total.set(""),
+
+        
+    
     # =================== All data fetch ===================
 
     def fetch_contact(self):
@@ -290,6 +396,54 @@ class Roombooking:
                 lbl5 = Label(showDataframe, text=row,font=("TkDefaultFont", 10, "bold"),)
                 lbl5.place(x=90, y=120)
 
+    # search system
+
+    def search(self):
+        conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+        my_cursor = conn.cursor()
+
+        my_cursor.execute("SELECT * FROM room WHERE " + str(self.search_var.get()) + " LIKE '%" + str(self.txt_search.get()) + "%'")
+        rows = my_cursor.fetchall()
+        if len(rows) != 0:
+            self.room_table.delete(*self.room_table.get_children())
+            for item in rows:
+                self.room_table.insert("", END, values= item)
+            conn.commit()
+        conn.close()    
+
+
+    def total(self):
+        inDate = self.var_Checkin.get()
+        outDate = self.var_Checkout.get()
+        inDate = datetime.strptime(inDate, "%d/%m/%Y")
+        outDate = datetime.strptime(outDate, "%d/%m/%Y")
+        self.var_Noofdays.set(abs(outDate - inDate).days)
+
+        if (self.var_Meal.get() == "Breakfast" and self.var_Roomtype.get() == "Luxury"):
+            q1 = float(300)
+            q2 = float(700)
+            q3 = float(self.var_Noofdays.get())
+            q4 = float(q1 + q2)
+            q5 = float(q3 + q4)
+            tax = "Rs." + str("%.2f"%((q5)*0.09))
+            subtotal = "Rs." + str("%.2f"%((q5)))
+            total = "Rs." + str("%.2f"%(q5+((q5)*0.09)))
+            self.var_paidtax.set(tax)
+            self.var_subtotal.set(subtotal)
+            self.var_total.set(total)
+
+        elif (self.var_Meal.get() == "Lunch" and self.var_Roomtype.get() == "Single"):
+            q1 = float(300)
+            q2 = float(700)
+            q3 = float(self.var_Noofdays.get())
+            q4 = float(q1 + q2)
+            q5 = float(q3 + q4)
+            tax = "Rs." + str("%.2f"%((q5)*0.09))
+            subtotal = "Rs." + str("%.2f"%((q5)))
+            total = "Rs." + str("%.2f"%(q5+((q5)*0.09)))
+            self.var_paidtax.set(tax)
+            self.var_subtotal.set(subtotal)
+            self.var_total.set(total)
 
 
 if __name__ == "__main__":
