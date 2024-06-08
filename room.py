@@ -74,8 +74,13 @@ class Roombooking:
         room_type = Label(label_frame_left, text="Room Type", font=("TkDefaultFont", 10, "bold"), padx=2, pady=6)
         room_type.grid(row=3, column=0, sticky=W)
 
+        conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+        my_cursor = conn.cursor()
+        my_cursor.execute("Select RoomType from details")
+        types = my_cursor.fetchall()
+
         combo_room_type = ttk.Combobox(label_frame_left, textvariable=self.var_Roomtype, font=("TkDefaultFont", 10, "bold"), width=8, state="readonly")
-        combo_room_type["value"] = ("Single", "Double", "Luxury")
+        combo_room_type["value"] = types
         combo_room_type.current(0)
         combo_room_type.grid(row=3, column=1)
 
@@ -83,8 +88,19 @@ class Roombooking:
         available_room = Label(label_frame_left, text="Available Room", font=("TkDefaultFont", 10, "bold"), padx=2, pady=6)
         available_room.grid(row=4, column=0, sticky=W)
 
-        available_room = ttk.Entry(label_frame_left, textvariable=self.var_Roomavailable, width=10, font=("TkDefaultFont", 10, "bold"))
-        available_room.grid(row=4, column=1)
+        # available_room = ttk.Entry(label_frame_left, textvariable=self.var_Roomavailable, width=10, font=("TkDefaultFont", 10, "bold"))
+        # available_room.grid(row=4, column=1)
+
+
+        conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+        my_cursor = conn.cursor()
+        my_cursor.execute("Select RoomNo from details")
+        rows = my_cursor.fetchall()
+
+        combo_RoomNo = ttk.Combobox(label_frame_left, textvariable=self.var_Roomavailable, font=("TkDefaultFont", 10, "bold"), width=8, state="readonly")
+        combo_RoomNo["value"] = rows
+        combo_RoomNo.current(0)
+        combo_RoomNo.grid(row=4, column=1)
 
         # Meal
         meal = Label(label_frame_left, text="Meal", font=("TkDefaultFont", 10, "bold"), padx=2, pady=6)
