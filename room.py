@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import mysql.connector
-import random
+import random, os
 from time import strftime
 from datetime import datetime
 
@@ -29,9 +29,12 @@ class Roombooking:
         label_title.place(x=0, y=0, width=1020, height=50)
 
         # ================= logo =====================
-        img2 = Image.open(r"C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\hotel_logo.jpg")
-        img2 = img2.resize((105, 45))
-        self.photoimg2 = ImageTk.PhotoImage(img2)
+        base_path = os.path.dirname(__file__)
+        image_path = os.path.join(base_path, "images", "hotel_logo.jpg")
+        image_path = image_path.replace("\\", "\\\\")
+        img = Image.open(fr"{image_path}")
+        img = img.resize((105, 45))
+        self.photoimg2 = ImageTk.PhotoImage(img)
 
         labelimg = Label(self.root, image = self.photoimg2, bd = 0, relief = RIDGE)
         labelimg.place(x = 2, y = 2, width= 105, height= 45)
@@ -74,7 +77,7 @@ class Roombooking:
         room_type = Label(label_frame_left, text="Room Type", font=("TkDefaultFont", 10, "bold"), padx=2, pady=6)
         room_type.grid(row=3, column=0, sticky=W)
 
-        conn = mysql.connector.connect(host="localhost", username="root", password = "user123", database="management")
+        conn = mysql.connector.connect(host="localhost", username="User123", password = "user123", database="management")
         my_cursor = conn.cursor()
         my_cursor.execute("Select RoomType from details")
         types = my_cursor.fetchall()
@@ -92,7 +95,7 @@ class Roombooking:
         # available_room.grid(row=4, column=1)
 
 
-        conn = mysql.connector.connect(host="localhost", username="root", password = "user123", database="management")
+        conn = mysql.connector.connect(host="localhost", username="User123", password = "user123", database="management")
         my_cursor = conn.cursor()
         my_cursor.execute("Select RoomNo from details")
         rows = my_cursor.fetchall()
@@ -158,7 +161,12 @@ class Roombooking:
         button_reset.grid(row=0, column=3, padx=1)
 
         # =================== rightside image ===================
-        img3 = Image.open(r"C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\room1.jpg")
+
+        base_path3 = os.path.dirname(__file__)
+        image_path3 = os.path.join(base_path3, "images", "userimg.jpg")
+        image_path3 = image_path3.replace("\\", "\\\\")
+
+        img3 = Image.open(fr"{image_path3}")
         img3 = img3.resize((420, 200))
         self.photoimg3 = ImageTk.PhotoImage(img3)
 

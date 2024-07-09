@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import mysql.connector
-import random
+import random, os
 from time import strftime
 from datetime import datetime
 
@@ -22,8 +22,22 @@ class Register:
         self.var_password = StringVar()
         self.var_confirm_pass = StringVar()
 
+        
+        # base_path = os.path.dirname(__file__)
+        # image_path = os.path.join(base_path, "images", "register.jpeg")
+        # path_list = list()
+        # for item in image_path:
+        #     path_list.append(item)
+        #     if item == "\\":
+        #         path_list.append("\\")
+        # image_path = "".join(path_list)   
+        # print(image_path)
 
-        self.bg = ImageTk.PhotoImage(file= r"C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\register.jpeg")
+        base_path = os.path.dirname(__file__)
+        image_path = os.path.join(base_path, "images", "register.jpeg")
+        image_path = image_path.replace("\\", "\\\\")
+        self.bg = ImageTk.PhotoImage(file= fr"{image_path}")
+
         labelbg = Label(self.root, image = self.bg)
         labelbg.place(x = 0, y = 0, relwidth= 1, relheight=1)
 

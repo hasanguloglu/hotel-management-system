@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import mysql.connector
-import random
+import random, os
 from time import strftime
 from datetime import datetime
 
@@ -12,14 +12,23 @@ class login_window:
         self.root.title("Login")
         self.root.geometry("1550x800+0+0")
 
-        self.bg = ImageTk.PhotoImage(file= r"C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\loginbg.jpg")
+        base_path = os.path.dirname(__file__)
+        image_path = os.path.join(base_path, "images", "loginbg.jpg")
+        image_path = image_path.replace("\\", "\\\\")
+        self.bg = ImageTk.PhotoImage(file= fr"{image_path}")
+
         labelbg = Label(self.root, image = self.bg)
         labelbg.place(x = 0, y = 0, relwidth= 1, relheight=1)
 
         loginframe = Frame(self.root, bg = "white")
         loginframe.place(x = 450, y=100, width=340, height=450)
 
-        img1 = Image.open("C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\userimg.jpg")
+
+        base_path = os.path.dirname(__file__)
+        image_path = os.path.join(base_path, "images", "userimg.jpg")
+        image_path = image_path.replace("\\", "\\\\")
+
+        img1 = Image.open(fr"{image_path}")
         img1 = img1.resize((100, 100),)
         self.photoimg1 = ImageTk.PhotoImage(img1)
 

@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 from customer import Custom_Window
 from room import Roombooking
 from details import Details_room
+import os
 
 class HotelManagementSystem:
     def __init__(self, root):
@@ -10,7 +11,11 @@ class HotelManagementSystem:
         self.root.title("Hotel Management System")
         self.root.geometry("1550x800+0+0")
 
-        img1 = Image.open("C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\hotel.jpg")
+        base_path = os.path.dirname(__file__)
+        image_path = os.path.join(base_path, "images", "hotel.jpg")
+        image_path = image_path.replace("\\", "\\\\")
+
+        img1 = Image.open(fr"{image_path}")
         img1 = img1.resize((1700, 200))
         self.photoimg1 = ImageTk.PhotoImage(img1)
 
@@ -18,7 +23,11 @@ class HotelManagementSystem:
         labelimg.place(x = 250, y = 0, width= 1700, height= 200)
 
         # ================= logo =====================
-        img2 = Image.open("C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\hotel_logo.jpg")
+        
+        base_path2 = os.path.dirname(__file__)
+        image_path2 = os.path.join(base_path2, "images", "hotel_logo.jpg")
+        image_path2 = image_path2.replace("\\", "\\\\")
+        img2 = Image.open(fr"{image_path2}")
         img2 = img2.resize((250, 200))
         self.photoimg2 = ImageTk.PhotoImage(img2)
 

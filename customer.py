@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import mysql.connector
-import random
+import random, os
 
 class Custom_Window:
     def __init__(self, root):
@@ -32,7 +32,11 @@ class Custom_Window:
         label_title.place(x=0, y=0, width=1020, height=50)
 
         # ================= logo =====================
-        img2 = Image.open(r"C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\hotel_logo.jpg")
+        base_path = os.path.dirname(__file__)
+        image_path = os.path.join(base_path, "images", "hotel_logo.jpg")
+        image_path = image_path.replace("\\", "\\\\")
+        
+        img2 = Image.open(fr"{image_path}")
         img2 = img2.resize((105, 45))
         self.photoimg2 = ImageTk.PhotoImage(img2)
 

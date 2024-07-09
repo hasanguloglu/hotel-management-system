@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import mysql.connector
-import random
+import random, os
 from time import strftime
 from datetime import datetime
 
@@ -17,9 +17,13 @@ class Details_room:
         label_title.place(x=0, y=0, width=1020, height=50)
 
         # ================= logo =====================
-        img2 = Image.open(r"C:\\Users\\Nazife\\Desktop\\hotel_management_system\\images\\hotel_logo.jpg")
-        img2 = img2.resize((105, 45))
-        self.photoimg2 = ImageTk.PhotoImage(img2)
+        
+        base_path = os.path.dirname(__file__)
+        image_path = os.path.join(base_path, "images", "hotel_logo.jpg")
+        image_path = image_path.replace("\\", "\\\\")
+        img = Image.open(fr"{image_path}")
+        img = img.resize((105, 45))
+        self.photoimg2 = ImageTk.PhotoImage(img)
 
         labelimg = Label(self.root, image = self.photoimg2, bd = 0, relief = RIDGE)
         labelimg.place(x = 2, y = 2, width= 105, height= 45)
