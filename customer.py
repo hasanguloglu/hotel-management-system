@@ -218,7 +218,7 @@ class Custom_Window:
             messagebox.showerror("Error", "All fields are required", parent=self.root)
         else:
             try:
-                conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+                conn = mysql.connector.connect(host="localhost", username= "User123", password = "user123", database="management")
                 my_cursor = conn.cursor()
             
                 my_cursor.execute("insert into customer values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (
@@ -243,7 +243,7 @@ class Custom_Window:
     
     
     def fetch_data(self):
-        conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+        conn = mysql.connector.connect(host="localhost", username= "User123", password = "user123", database="management")
         my_cursor = conn.cursor()
         my_cursor.execute("Select * from customer")
         rows = my_cursor.fetchall()
@@ -277,7 +277,7 @@ class Custom_Window:
         if self.variable_mobile.get() == "":
             messagebox.showerror("Error", "Please enter mobile number", parent = self.root)
         else:
-            conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+            conn = mysql.connector.connect(host="localhost", username= "User123", password = "user123", database="management")
             my_cursor = conn.cursor()
             my_cursor.execute("UPDATE customer SET Name =%s, Mother =%s, Gender =%s, Postcode=%s, Mobile =%s, Email =%s, Nationality =%s, IdProof =%s, IdNumber=%s, Address =%s WHERE Ref=%s",
                               (
@@ -302,7 +302,7 @@ class Custom_Window:
     def mDelete(self):
         mDelete = messagebox.askyesno("Hotel Management System", "Do you want to delete this customer", parent=self.root)
         if mDelete > 0:
-            conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+            conn = mysql.connector.connect(host="localhost", username= "User123", password = "user123", database="management")
             my_cursor = conn.cursor()
             query = "DELETE FROM customer WHERE Ref =%s"
             value = (self.variable_ref.get(),)
@@ -333,7 +333,7 @@ class Custom_Window:
 
 
     def search(self):
-        conn = mysql.connector.connect(host="localhost", username="root", password = "Nazi2008", database="management")
+        conn = mysql.connector.connect(host="localhost", username= "User123", password = "user123", database="management")
         my_cursor = conn.cursor()
 
         my_cursor.execute("SELECT * FROM customer WHERE " + str(self.search_var.get()) + " LIKE '%" + str(self.txt_search.get()) + "%'")
