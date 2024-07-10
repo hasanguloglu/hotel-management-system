@@ -1,7 +1,6 @@
-# Hotel-management-system
-## Hotel Management System- Tkinter Training - / Via CodeWithKiran on Youtube 
-
 # Hotel Management System
+## Tkinter Training - / Via CodeWithKiran on Youtube 
+
 
 ## Table of Contents
 - [Introduction](#introduction)
